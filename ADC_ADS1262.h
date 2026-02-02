@@ -22,6 +22,12 @@
 // #### Description ############################################################
 // #############################################################################
 
+/**
+ *  @file
+ *
+ *  @brief Platform ADC ADS1262 Driver
+ */
+
 // #############################################################################
 // #### Control Include(s) #####################################################
 // #############################################################################
@@ -33,6 +39,18 @@
 // #############################################################################
 // #### File Guard #############################################################
 // #############################################################################
+
+/**
+ *  @addtogroup Platform_ADC_Driver
+ *
+ *  @{
+ */
+
+/**
+ *  @defgroup Platform_ADC_ADS1262 ADS1262
+ *
+ *  @{
+ */
 
 #ifndef ADC_ADS1262_H_
     #define ADC_ADS1262_H_
@@ -56,18 +74,33 @@ extern "C"
     // #### Public Type(s) #########################################################
     // #############################################################################
 
+    /**
+     *  @brief ADC ADS1262 Operation Status
+     *
+     *  @enum ADC_ADS1262_Status_t
+     */
     typedef enum ADC_ADS1262_Status
     {
-        ADC_ADS1262_Status_Success = 0,
-        ADC_ADS1262_Status_ArgumentInvalid,
-        ADC_ADS1262_Status_NotSupported,
-        ADC_ADS1262_Status_Error,
-        ADC_ADS1262_Status_Busy,
-        ADC_ADS1262_Status_Timeout,
+        ADC_ADS1262_Status_Success = 0,     ///< Success
+        ADC_ADS1262_Status_ArgumentInvalid, ///< Argument Invalid
+        ADC_ADS1262_Status_NotSupported,    ///< Not Supported
+        ADC_ADS1262_Status_Error,           ///< General Error
+        ADC_ADS1262_Status_Busy,            ///< Busy
+        ADC_ADS1262_Status_Timeout,         ///< Timeout
     } ADC_ADS1262_Status_t;
 
+    /**
+     *  @brief ADC ADS1262 Instance Context
+     *
+     *  @struct ADC_ADS1262_Instance_Context_t
+     */
     typedef struct ADC_ADS1262_Instance_Context ADC_ADS1262_Instance_Context_t;
 
+    /**
+     *  @brief ADC ADS1262 Instance
+     *
+     *  @struct ADC_ADS1262_Instance_t
+     */
     typedef struct ADC_ADS1262_Instance
     {
         SPI_t SPI;
@@ -76,6 +109,8 @@ extern "C"
         GPIO_t DataOut;
         GPIO_t DataReady;
         GPIO_t Reset;
+
+        // @note Managed Internally
         ADC_ADS1262_Instance_Context_t * Context;
     } ADC_ADS1262_Instance_t;
 
@@ -635,36 +670,41 @@ extern "C"
     // #### Public Method(s) #######################################################
     // #############################################################################
 
-    ADC_ADS1262_Status_t ADC_ADS1262_Initialize( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance );
-    ADC_ADS1262_Status_t ADC_ADS1262_Cycle( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance );
-    ADC_ADS1262_Status_t ADC_ADS1262_DeInitialize( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance );
+    ADC_ADS1262_Status_t ADC_ADS1262_Initialize( ADC_ADS1262_Instance_t * Instance );
+    ADC_ADS1262_Status_t ADC_ADS1262_Cycle( ADC_ADS1262_Instance_t * Instance );
+    ADC_ADS1262_Status_t ADC_ADS1262_DeInitialize( ADC_ADS1262_Instance_t * Instance );
 
-    ADC_ADS1262_Status_t ADC_ADS1262_GetIdentification( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ID_Revision_t * ADC_ADS1262_ID_Revision, ADC_ADS1262_ID_Device_t * ADC_ADS1262_ID_Device );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetPower( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Power_InternalReference_t ADC_ADS1262_Power_InternalReference, ADC_ADS1262_Power_LevelShiftVoltage_t ADC_ADS1262_Power_LevelShiftVoltage, ADC_ADS1262_Power_ResetIndicator_t * ADC_ADS1262_Power_ResetIndicator );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetInterface( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Interface_CRC_t ADC_ADS1262_Interface_CRC, ADC_ADS1262_Interface_Status_t ADC_ADS1262_Interface_Status, ADC_ADS1262_Interface_Timeout_t ADC_ADS1262_Interface_Timeout );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetMode0( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Mode_ConversionDelay_t ADC_ADS1262_Mode_ConversionDelay, ADC_ADS1262_Mode_Chop_t ADC_ADS1262_Mode_Chop, ADC_ADS1262_Mode_Conversion_t ADC_ADS1262_Mode_Conversion, ADC_ADS1262_Mode_ReferencePolarityMUX_t ADC_ADS1262_Mode_ReferencePolarityMUX );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetMode1( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Mode_BiasMagnitude_t ADC_ADS1262_Mode_BiasMagnitude, ADC_ADS1262_Mode_BiasPolarity_t ADC_ADS1262_Mode_BiasPolarity, ADC_ADS1262_Mode_BiasConnection_t ADC_ADS1262_Mode_BiasConnection, ADC_ADS1262_Mode_Filter_t ADC_ADS1262_Mode_Filter );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetMode2( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Mode_DataRate_t ADC_ADS1262_Mode_DataRate, ADC_ADS1262_Mode_Gain_t ADC_ADS1262_Mode_Gain, ADC_ADS1262_Mode_ProgrammableGainAmplifierBypass_t ADC_ADS1262_Mode_ProgrammableGainAmplifierBypass );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetInputMUX( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_InputMultiplexer_Negative_t ADC_ADS1262_InputMultiplexer_Negative, ADC_ADS1262_InputMultiplexer_Positive_t ADC_ADS1262_InputMultiplexer_Positive );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetCalibrationOffset( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_CalibrationOffset_t ADC_ADS1262_CalibrationOffset );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetCalibrationFullScale( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_CalibrationFullScale_t ADC_ADS1262_CalibrationFullScale );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetIDAC_MUX( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_IDAC_1_Multiplexer_t ADC_ADS1262_IDAC_1_Multiplexer, ADC_ADS1262_IDAC_2_Multiplexer_t ADC_ADS1262_IDAC_2_Multiplexer );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetIDAC_Magnitude( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_IDCA_1_Magnitude_t ADC_ADS1262_IDCA_1_Magnitude, ADC_ADS1262_IDCA_2_Magnitude_t ADC_ADS1262_IDCA_2_Magnitude );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetREF_MUX( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ReferenceMultiplexer_Negative_t ADC_ADS1262_ReferenceMultiplexer_Negative, ADC_ADS1262_ReferenceMultiplexer_Positive_t ADC_ADS1262_ReferenceMultiplexer_Positive );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetTDAC_Positive( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_TDACP_Magnitude_t ADC_ADS1262_TDACP_Magnitude, ADC_ADS1262_TDACP_Output_t ADC_ADS1262_TDACP_Output );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetTDAC_Negative( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_TDACN_Magnitude_t ADC_ADS1262_TDACN_Magnitude, ADC_ADS1262_TDACN_Output_t ADC_ADS1262_TDACN_Output );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetGPIOConnection( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_GPIO_0_Connection_t ADC_ADS1262_GPIO_0_Connection, ADC_ADS1262_GPIO_1_Connection_t ADC_ADS1262_GPIO_1_Connection, ADC_ADS1262_GPIO_2_Connection_t ADC_ADS1262_GPIO_2_Connection, ADC_ADS1262_GPIO_3_Connection_t ADC_ADS1262_GPIO_3_Connection, ADC_ADS1262_GPIO_4_Connection_t ADC_ADS1262_GPIO_4_Connection, ADC_ADS1262_GPIO_5_Connection_t ADC_ADS1262_GPIO_5_Connection, ADC_ADS1262_GPIO_6_Connection_t ADC_ADS1262_GPIO_6_Connection, ADC_ADS1262_GPIO_7_Connection_t ADC_ADS1262_GPIO_7_Connection );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetGPIODirection( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_GPIO_0_Direction_t ADC_ADS1262_GPIO_0_Direction, ADC_ADS1262_GPIO_1_Direction_t ADC_ADS1262_GPIO_1_Direction, ADC_ADS1262_GPIO_2_Direction_t ADC_ADS1262_GPIO_2_Direction, ADC_ADS1262_GPIO_3_Direction_t ADC_ADS1262_GPIO_3_Direction, ADC_ADS1262_GPIO_4_Direction_t ADC_ADS1262_GPIO_4_Direction, ADC_ADS1262_GPIO_5_Direction_t ADC_ADS1262_GPIO_5_Direction, ADC_ADS1262_GPIO_6_Direction_t ADC_ADS1262_GPIO_6_Direction, ADC_ADS1262_GPIO_7_Direction_t ADC_ADS1262_GPIO_7_Direction );
-    ADC_ADS1262_Status_t ADC_ADS1262_SetGPIOData( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_GPIO_0_Data_t ADC_ADS1262_GPIO_0_Data, ADC_ADS1262_GPIO_1_Data_t ADC_ADS1262_GPIO_1_Data, ADC_ADS1262_GPIO_2_Data_t ADC_ADS1262_GPIO_2_Data, ADC_ADS1262_GPIO_3_Data_t ADC_ADS1262_GPIO_3_Data, ADC_ADS1262_GPIO_4_Data_t ADC_ADS1262_GPIO_4_Data, ADC_ADS1262_GPIO_5_Data_t ADC_ADS1262_GPIO_5_Data, ADC_ADS1262_GPIO_6_Data_t ADC_ADS1262_GPIO_6_Data, ADC_ADS1262_GPIO_7_Data_t ADC_ADS1262_GPIO_7_Data );
+    ADC_ADS1262_Status_t ADC_ADS1262_GetIdentification( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ID_Revision_t * ADC_ADS1262_ID_Revision, ADC_ADS1262_ID_Device_t * ADC_ADS1262_ID_Device );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetPower( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Power_InternalReference_t ADC_ADS1262_Power_InternalReference, ADC_ADS1262_Power_LevelShiftVoltage_t ADC_ADS1262_Power_LevelShiftVoltage, ADC_ADS1262_Power_ResetIndicator_t * ADC_ADS1262_Power_ResetIndicator );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetInterface( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Interface_CRC_t ADC_ADS1262_Interface_CRC, ADC_ADS1262_Interface_Status_t ADC_ADS1262_Interface_Status, ADC_ADS1262_Interface_Timeout_t ADC_ADS1262_Interface_Timeout );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetMode0( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Mode_ConversionDelay_t ADC_ADS1262_Mode_ConversionDelay, ADC_ADS1262_Mode_Chop_t ADC_ADS1262_Mode_Chop, ADC_ADS1262_Mode_Conversion_t ADC_ADS1262_Mode_Conversion, ADC_ADS1262_Mode_ReferencePolarityMUX_t ADC_ADS1262_Mode_ReferencePolarityMUX );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetMode1( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Mode_BiasMagnitude_t ADC_ADS1262_Mode_BiasMagnitude, ADC_ADS1262_Mode_BiasPolarity_t ADC_ADS1262_Mode_BiasPolarity, ADC_ADS1262_Mode_BiasConnection_t ADC_ADS1262_Mode_BiasConnection, ADC_ADS1262_Mode_Filter_t ADC_ADS1262_Mode_Filter );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetMode2( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Mode_DataRate_t ADC_ADS1262_Mode_DataRate, ADC_ADS1262_Mode_Gain_t ADC_ADS1262_Mode_Gain, ADC_ADS1262_Mode_ProgrammableGainAmplifierBypass_t ADC_ADS1262_Mode_ProgrammableGainAmplifierBypass );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetInputMUX( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_InputMultiplexer_Negative_t ADC_ADS1262_InputMultiplexer_Negative, ADC_ADS1262_InputMultiplexer_Positive_t ADC_ADS1262_InputMultiplexer_Positive );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetCalibrationOffset( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_CalibrationOffset_t ADC_ADS1262_CalibrationOffset );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetCalibrationFullScale( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_CalibrationFullScale_t ADC_ADS1262_CalibrationFullScale );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetIDAC_MUX( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_IDAC_1_Multiplexer_t ADC_ADS1262_IDAC_1_Multiplexer, ADC_ADS1262_IDAC_2_Multiplexer_t ADC_ADS1262_IDAC_2_Multiplexer );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetIDAC_Magnitude( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_IDCA_1_Magnitude_t ADC_ADS1262_IDCA_1_Magnitude, ADC_ADS1262_IDCA_2_Magnitude_t ADC_ADS1262_IDCA_2_Magnitude );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetREF_MUX( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ReferenceMultiplexer_Negative_t ADC_ADS1262_ReferenceMultiplexer_Negative, ADC_ADS1262_ReferenceMultiplexer_Positive_t ADC_ADS1262_ReferenceMultiplexer_Positive );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetTDAC_Positive( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_TDACP_Magnitude_t ADC_ADS1262_TDACP_Magnitude, ADC_ADS1262_TDACP_Output_t ADC_ADS1262_TDACP_Output );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetTDAC_Negative( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_TDACN_Magnitude_t ADC_ADS1262_TDACN_Magnitude, ADC_ADS1262_TDACN_Output_t ADC_ADS1262_TDACN_Output );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetGPIOConnection( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_GPIO_0_Connection_t ADC_ADS1262_GPIO_0_Connection, ADC_ADS1262_GPIO_1_Connection_t ADC_ADS1262_GPIO_1_Connection, ADC_ADS1262_GPIO_2_Connection_t ADC_ADS1262_GPIO_2_Connection, ADC_ADS1262_GPIO_3_Connection_t ADC_ADS1262_GPIO_3_Connection, ADC_ADS1262_GPIO_4_Connection_t ADC_ADS1262_GPIO_4_Connection, ADC_ADS1262_GPIO_5_Connection_t ADC_ADS1262_GPIO_5_Connection, ADC_ADS1262_GPIO_6_Connection_t ADC_ADS1262_GPIO_6_Connection, ADC_ADS1262_GPIO_7_Connection_t ADC_ADS1262_GPIO_7_Connection );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetGPIODirection( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_GPIO_0_Direction_t ADC_ADS1262_GPIO_0_Direction, ADC_ADS1262_GPIO_1_Direction_t ADC_ADS1262_GPIO_1_Direction, ADC_ADS1262_GPIO_2_Direction_t ADC_ADS1262_GPIO_2_Direction, ADC_ADS1262_GPIO_3_Direction_t ADC_ADS1262_GPIO_3_Direction, ADC_ADS1262_GPIO_4_Direction_t ADC_ADS1262_GPIO_4_Direction, ADC_ADS1262_GPIO_5_Direction_t ADC_ADS1262_GPIO_5_Direction, ADC_ADS1262_GPIO_6_Direction_t ADC_ADS1262_GPIO_6_Direction, ADC_ADS1262_GPIO_7_Direction_t ADC_ADS1262_GPIO_7_Direction );
+    ADC_ADS1262_Status_t ADC_ADS1262_SetGPIOData( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_GPIO_0_Data_t ADC_ADS1262_GPIO_0_Data, ADC_ADS1262_GPIO_1_Data_t ADC_ADS1262_GPIO_1_Data, ADC_ADS1262_GPIO_2_Data_t ADC_ADS1262_GPIO_2_Data, ADC_ADS1262_GPIO_3_Data_t ADC_ADS1262_GPIO_3_Data, ADC_ADS1262_GPIO_4_Data_t ADC_ADS1262_GPIO_4_Data, ADC_ADS1262_GPIO_5_Data_t ADC_ADS1262_GPIO_5_Data, ADC_ADS1262_GPIO_6_Data_t ADC_ADS1262_GPIO_6_Data, ADC_ADS1262_GPIO_7_Data_t ADC_ADS1262_GPIO_7_Data );
 
-    ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetConfiguration( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ADC_2_Mode_Gain_t ADC_ADS1262_ADC_2_Mode_Gain, ADC_ADS1262_ADC_2_InputReference_t ADC_ADS1262_ADC_2_InputReference, ADC_ADS1262_ADC_2_DataRate_t ADC_ADS1262_ADC_2_DataRate );
-    ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetInputMUX( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ADC_2_InputMultiplexer_Negative_t ADC_ADS1262_ADC_2_InputMultiplexer_Negative, ADC_ADS1262_ADC_2_InputMultiplexer_Positive_t ADC_ADS1262_ADC_2_InputMultiplexer_Positive );
-    ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationOffset( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ADC_2_CalibrationOffset_t ADC_ADS1262_ADC_2_CalibrationOffset );
-    ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationFullScale( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ADC_2_CalibrationFullScale_t ADC_ADS1262_ADC_2_CalibrationFullScale );
+    ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetConfiguration( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ADC_2_Mode_Gain_t ADC_ADS1262_ADC_2_Mode_Gain, ADC_ADS1262_ADC_2_InputReference_t ADC_ADS1262_ADC_2_InputReference, ADC_ADS1262_ADC_2_DataRate_t ADC_ADS1262_ADC_2_DataRate );
+    ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetInputMUX( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ADC_2_InputMultiplexer_Negative_t ADC_ADS1262_ADC_2_InputMultiplexer_Negative, ADC_ADS1262_ADC_2_InputMultiplexer_Positive_t ADC_ADS1262_ADC_2_InputMultiplexer_Positive );
+    ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationOffset( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ADC_2_CalibrationOffset_t ADC_ADS1262_ADC_2_CalibrationOffset );
+    ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationFullScale( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ADC_2_CalibrationFullScale_t ADC_ADS1262_ADC_2_CalibrationFullScale );
 
     // #############################################################################
     // #### Public Variable(s) #####################################################
     // #############################################################################
+
+    /**
+     *  @brief Version
+     */
+    extern const char ADC_ADS1262_VERSION[];
 
     // #############################################################################
     // #### File Guard #############################################################
@@ -675,6 +715,12 @@ extern "C"
     #endif /* __cplusplus */
 
 #endif /* ADC_ADS1262_H_ */
+
+/**
+ *  @}
+ *
+ *  @}
+ */
 
 // #############################################################################
 // #### END OF FILE ############################################################

@@ -572,10 +572,9 @@ typedef struct ADC_ADS1262_Context
 // #### Private Method(s) Prototype ############################################
 // #############################################################################
 
-static ADC_ADS1262_Status_t ADC_ADS1262_Instance_IsValid( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance );
-static ADC_ADS1262_Status_t ADC_ADS1262_Instance_Initialize( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance );
-static ADC_ADS1262_Status_t ADC_ADS1262_Instance_Cycle( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance );
-static ADC_ADS1262_Status_t ADC_ADS1262_Instance_DeInitialize( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance );
+static ADC_ADS1262_Status_t ADC_ADS1262_Instance_Initialize( ADC_ADS1262_Instance_t * Instance );
+static ADC_ADS1262_Status_t ADC_ADS1262_Instance_Cycle( ADC_ADS1262_Instance_t * Instance );
+static ADC_ADS1262_Status_t ADC_ADS1262_Instance_DeInitialize( ADC_ADS1262_Instance_t * Instance );
 //
 static ADC_ADS1262_Status_t ADC_ADS1262_Context_Initialize( void );
 static ADC_ADS1262_Status_t ADC_ADS1262_Context_Cycle( void );
@@ -591,588 +590,477 @@ static ADC_ADS1262_Context_t ADC_ADS1262_Context;
 // #### Private Method(s) ######################################################
 // #############################################################################
 
-static ADC_ADS1262_Status_t ADC_ADS1262_Instance_IsValid( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance )
+static ADC_ADS1262_Status_t ADC_ADS1262_Instance_Initialize( ADC_ADS1262_Instance_t * Instance )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
+
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-        if ( ADC_ADS1262_Instance == NULL )
-        {
-            ADC_ADS1262_Status = ADC_ADS1262_Status_ArgumentInvalid;
-            break;
-        }
-        if ( ADC_ADS1262_Instance->Context == NULL )
-        {
-            ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
-            break;
-        }
-        ADC_ADS1262_Status = ADC_ADS1262_Status_Success;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
+
+        Instance->Context->Register_ID.Value = ADC_ADS1262_REGISTER_ID_DEFAULT;
+        Instance->Context->Register_POWER.Value = ADC_ADS1262_REGISTER_POWER_DEFAULT;
+        Instance->Context->Register_INTERFACE.Value = ADC_ADS1262_REGISTER_INTERFACE_DEFAULT;
+        Instance->Context->Register_MODE0.Value = ADC_ADS1262_REGISTER_MODE0_DEFAULT;
+        Instance->Context->Register_MODE1.Value = ADC_ADS1262_REGISTER_MODE1_DEFAULT;
+        Instance->Context->Register_MODE2.Value = ADC_ADS1262_REGISTER_MODE2_DEFAULT;
+        Instance->Context->Register_INPMUX.Value = ADC_ADS1262_REGISTER_INPMUX_DEFAULT;
+        Instance->Context->Register_OFCAL0.Value = ADC_ADS1262_REGISTER_OFCAL0_DEFAULT;
+        Instance->Context->Register_OFCAL1.Value = ADC_ADS1262_REGISTER_OFCAL1_DEFAULT;
+        Instance->Context->Register_OFCAL2.Value = ADC_ADS1262_REGISTER_OFCAL2_DEFAULT;
+        Instance->Context->Register_FSCAL0.Value = ADC_ADS1262_REGISTER_FSCAL0_DEFAULT;
+        Instance->Context->Register_FSCAL1.Value = ADC_ADS1262_REGISTER_FSCAL1_DEFAULT;
+        Instance->Context->Register_FSCAL2.Value = ADC_ADS1262_REGISTER_FSCAL2_DEFAULT;
+        Instance->Context->Register_IDACMUX.Value = ADC_ADS1262_REGISTER_IDACMUX_DEFAULT;
+        Instance->Context->Register_IDACMAG.Value = ADC_ADS1262_REGISTER_IDACMAG_DEFAULT;
+        Instance->Context->Register_REFMUX.Value = ADC_ADS1262_REGISTER_REFMUX_DEFAULT;
+        Instance->Context->Register_TDACP.Value = ADC_ADS1262_REGISTER_TDACP_DEFAULT;
+        Instance->Context->Register_TDACN.Value = ADC_ADS1262_REGISTER_TDACN_DEFAULT;
+        Instance->Context->Register_GPIOCON.Value = ADC_ADS1262_REGISTER_GPIOCON_DEFAULT;
+        Instance->Context->Register_GPIODIR.Value = ADC_ADS1262_REGISTER_GPIODIR_DEFAULT;
+        Instance->Context->Register_GPIODAT.Value = ADC_ADS1262_REGISTER_GPIODAT_DEFAULT;
+        Instance->Context->Register_ADC2CFG.Value = ADC_ADS1262_REGISTER_ADC2CFG_DEFAULT;
+        Instance->Context->Register_ADC2MUX.Value = ADC_ADS1262_REGISTER_ADC2MUX_DEFAULT;
+        Instance->Context->Register_ADC2OFC0.Value = ADC_ADS1262_REGISTER_ADC2OFC0_DEFAULT;
+        Instance->Context->Register_ADC2OFC1.Value = ADC_ADS1262_REGISTER_ADC2OFC1_DEFAULT;
+        Instance->Context->Register_ADC2FSC0.Value = ADC_ADS1262_REGISTER_ADC2FSC0_DEFAULT;
+        Instance->Context->Register_ADC2FSC1.Value = ADC_ADS1262_REGISTER_ADC2FSC1_DEFAULT;
     }
     while ( 0 );
-    return ADC_ADS1262_Status;
+
+    return Status;
 }
 
-static ADC_ADS1262_Status_t ADC_ADS1262_Instance_Initialize( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance )
+static ADC_ADS1262_Status_t ADC_ADS1262_Instance_Cycle( ADC_ADS1262_Instance_t * Instance )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
+
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-        if ( ( ADC_ADS1262_Status = ADC_ADS1262_Instance_IsValid( ADC_ADS1262_Instance ) ) != ADC_ADS1262_Status_Success )
-        {
-            if ( ADC_ADS1262_Instance == NULL )
-            {
-                ADC_ADS1262_Status = ADC_ADS1262_Status_ArgumentInvalid;
-                break;
-            }
-            if ( ADC_ADS1262_Instance->Context == NULL )
-            {
-                RAM_Status_t RAM_Status = RAM_Status_Error;
-                if ( ( RAM_Status = RAM_Allocate( RAM_1, ( RAM_Reference_t * ) &ADC_ADS1262_Instance->Context, UTIL_SizeOf( ADC_ADS1262_Instance_Context_t ) ) ) != RAM_Status_Success )
-                {
-                    ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
-                    break;
-                }
-                // Double check context validity
-                if ( ADC_ADS1262_Instance->Context == NULL )
-                {
-                    ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
-                    break;
-                }
-                ADC_ADS1262_Status = ADC_ADS1262_Status_Success;
-            }
-        }
-        if ( ADC_ADS1262_Status == ADC_ADS1262_Status_Success )
-        {
-            ADC_ADS1262_Instance->Context->Register_ID.Value = ADC_ADS1262_REGISTER_ID_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_POWER.Value = ADC_ADS1262_REGISTER_POWER_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_INTERFACE.Value = ADC_ADS1262_REGISTER_INTERFACE_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_MODE0.Value = ADC_ADS1262_REGISTER_MODE0_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_MODE1.Value = ADC_ADS1262_REGISTER_MODE1_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_MODE2.Value = ADC_ADS1262_REGISTER_MODE2_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_INPMUX.Value = ADC_ADS1262_REGISTER_INPMUX_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_OFCAL0.Value = ADC_ADS1262_REGISTER_OFCAL0_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_OFCAL1.Value = ADC_ADS1262_REGISTER_OFCAL1_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_OFCAL2.Value = ADC_ADS1262_REGISTER_OFCAL2_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_FSCAL0.Value = ADC_ADS1262_REGISTER_FSCAL0_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_FSCAL1.Value = ADC_ADS1262_REGISTER_FSCAL1_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_FSCAL2.Value = ADC_ADS1262_REGISTER_FSCAL2_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_IDACMUX.Value = ADC_ADS1262_REGISTER_IDACMUX_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_IDACMAG.Value = ADC_ADS1262_REGISTER_IDACMAG_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_REFMUX.Value = ADC_ADS1262_REGISTER_REFMUX_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_TDACP.Value = ADC_ADS1262_REGISTER_TDACP_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_TDACN.Value = ADC_ADS1262_REGISTER_TDACN_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_GPIOCON.Value = ADC_ADS1262_REGISTER_GPIOCON_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_GPIODIR.Value = ADC_ADS1262_REGISTER_GPIODIR_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_GPIODAT.Value = ADC_ADS1262_REGISTER_GPIODAT_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_ADC2CFG.Value = ADC_ADS1262_REGISTER_ADC2CFG_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_ADC2MUX.Value = ADC_ADS1262_REGISTER_ADC2MUX_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_ADC2OFC0.Value = ADC_ADS1262_REGISTER_ADC2OFC0_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_ADC2OFC1.Value = ADC_ADS1262_REGISTER_ADC2OFC1_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_ADC2FSC0.Value = ADC_ADS1262_REGISTER_ADC2FSC0_DEFAULT;
-            ADC_ADS1262_Instance->Context->Register_ADC2FSC1.Value = ADC_ADS1262_REGISTER_ADC2FSC1_DEFAULT;
-        }
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
-    return ADC_ADS1262_Status;
+
+    return Status;
 }
 
-static ADC_ADS1262_Status_t ADC_ADS1262_Instance_Cycle( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance )
+static ADC_ADS1262_Status_t ADC_ADS1262_Instance_DeInitialize( ADC_ADS1262_Instance_t * Instance )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
-    do
-    {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-        if ( ( ADC_ADS1262_Status = ADC_ADS1262_Instance_IsValid( ADC_ADS1262_Instance ) ) != ADC_ADS1262_Status_Success )
-        {
-            break;
-        }
-        // TODO
-        ADC_ADS1262_Status = ADC_ADS1262_Status_Success;
-    }
-    while ( 0 );
-    return ADC_ADS1262_Status;
-}
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
 
-static ADC_ADS1262_Status_t ADC_ADS1262_Instance_DeInitialize( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance )
-{
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-        if ( ( ADC_ADS1262_Status = ADC_ADS1262_Instance_IsValid( ADC_ADS1262_Instance ) ) != ADC_ADS1262_Status_Success )
-        {
-            break;
-        }
-        // TODO
-        ADC_ADS1262_Status = ADC_ADS1262_Status_Success;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
-    return ADC_ADS1262_Status;
+
+    return Status;
 }
 
 static ADC_ADS1262_Status_t ADC_ADS1262_Context_Initialize( void )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
+    TIM_Status_t TIM_Status = TIM_Status_Success;
+
     do
     {
         ADC_Trace( "%s( void )", __FUNCTION__ );
-        TIM_Status_t TIM_Status = TIM_Status_Error;
+
         if ( ( TIM_Status = TIM_GetTimestamp( ADC_TIM, &ADC_ADS1262_Context.Timestamp ) ) != TIM_Status_Success )
         {
-            ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+            Status = ADC_ADS1262_Status_Error;
             break;
         }
-        ADC_ADS1262_Status = ADC_ADS1262_Status_Success;
     }
     while ( 0 );
-    return ADC_ADS1262_Status;
+
+    return Status;
 }
 
 static ADC_ADS1262_Status_t ADC_ADS1262_Context_Cycle( void )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
+    TIM_Status_t TIM_Status = TIM_Status_Success;
+
     do
     {
         ADC_Trace( "%s( void )", __FUNCTION__ );
-        TIM_Status_t TIM_Status = TIM_Status_Error;
+
         if ( ( TIM_Status = TIM_GetTimestamp( ADC_TIM, &ADC_ADS1262_Context.Timestamp ) ) != TIM_Status_Success )
         {
-            ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+            Status = ADC_ADS1262_Status_Error;
             break;
         }
-        ADC_ADS1262_Status = ADC_ADS1262_Status_Success;
     }
     while ( 0 );
-    return ADC_ADS1262_Status;
+
+    return Status;
 }
 
 static ADC_ADS1262_Status_t ADC_ADS1262_Context_DeInitialize( void )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
+
     do
     {
         ADC_Trace( "%s( void )", __FUNCTION__ );
-        // Nothing to be done
-        ADC_ADS1262_Status = ADC_ADS1262_Status_Success;
     }
     while ( 0 );
-    return ADC_ADS1262_Status;
+
+    return Status;
 }
 
 // #############################################################################
 // #### Public Method(s) #######################################################
 // #############################################################################
 
-ADC_ADS1262_Status_t ADC_ADS1262_Initialize( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance )
+ADC_ADS1262_Status_t ADC_ADS1262_Initialize( ADC_ADS1262_Instance_t * Instance )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
+
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-        if ( ( ADC_ADS1262_Status = ADC_ADS1262_Context_Initialize( ) ) != ADC_ADS1262_Status_Success )
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
+
+        if ( ( Status = ADC_ADS1262_Context_Initialize( ) ) != ADC_ADS1262_Status_Success )
         {
             break;
         }
-        ADC_ADS1262_Status = ADC_ADS1262_Instance_Initialize( ADC_ADS1262_Instance );
-    }
-    while ( 0 );
-    return ADC_ADS1262_Status;
-}
 
-ADC_ADS1262_Status_t ADC_ADS1262_Cycle( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance )
-{
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
-    do
-    {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-        if ( ( ADC_ADS1262_Status = ADC_ADS1262_Context_Cycle( ) ) != ADC_ADS1262_Status_Success )
+        if ( ( Status = ADC_ADS1262_Instance_Initialize( Instance ) ) != ADC_ADS1262_Status_Success )
         {
             break;
         }
-        ADC_ADS1262_Status = ADC_ADS1262_Instance_Cycle( ADC_ADS1262_Instance );
     }
     while ( 0 );
-    return ADC_ADS1262_Status;
+
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_DeInitialize( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance )
+ADC_ADS1262_Status_t ADC_ADS1262_Cycle( ADC_ADS1262_Instance_t * Instance )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
+
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-        if ( ( ADC_ADS1262_Status = ADC_ADS1262_Context_DeInitialize( ) ) != ADC_ADS1262_Status_Success )
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
+
+        if ( ( Status = ADC_ADS1262_Context_Cycle( ) ) != ADC_ADS1262_Status_Success )
         {
             break;
         }
-        ADC_ADS1262_Status = ADC_ADS1262_Instance_DeInitialize( ADC_ADS1262_Instance );
+
+        if ( ( Status = ADC_ADS1262_Instance_Cycle( Instance ) ) != ADC_ADS1262_Status_Success )
+        {
+            break;
+        }
     }
     while ( 0 );
-    return ADC_ADS1262_Status;
+
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_GetIdentification( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ID_Revision_t * ADC_ADS1262_ID_Revision, ADC_ADS1262_ID_Device_t * ADC_ADS1262_ID_Device )
+ADC_ADS1262_Status_t ADC_ADS1262_DeInitialize( ADC_ADS1262_Instance_t * Instance )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_Success;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
 
-        // TODO
+        if ( ( Status = ADC_ADS1262_Instance_DeInitialize( Instance ) ) != ADC_ADS1262_Status_Success )
+        {
+            break;
+        }
 
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        if ( ( Status = ADC_ADS1262_Context_DeInitialize( ) ) != ADC_ADS1262_Status_Success )
+        {
+            break;
+        }
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetPower( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Power_InternalReference_t ADC_ADS1262_Power_InternalReference, ADC_ADS1262_Power_LevelShiftVoltage_t ADC_ADS1262_Power_LevelShiftVoltage, ADC_ADS1262_Power_ResetIndicator_t * ADC_ADS1262_Power_ResetIndicator )
+ADC_ADS1262_Status_t ADC_ADS1262_GetIdentification( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ID_Revision_t * ID_Revision, ADC_ADS1262_ID_Device_t * ID_Device )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetInterface( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Interface_CRC_t ADC_ADS1262_Interface_CRC, ADC_ADS1262_Interface_Status_t ADC_ADS1262_Interface_Status, ADC_ADS1262_Interface_Timeout_t ADC_ADS1262_Interface_Timeout )
+ADC_ADS1262_Status_t ADC_ADS1262_SetPower( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Power_InternalReference_t Power_InternalReference, ADC_ADS1262_Power_LevelShiftVoltage_t Power_LevelShiftVoltage, ADC_ADS1262_Power_ResetIndicator_t * Power_ResetIndicator )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetMode0( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Mode_ConversionDelay_t ADC_ADS1262_Mode_ConversionDelay, ADC_ADS1262_Mode_Chop_t ADC_ADS1262_Mode_Chop, ADC_ADS1262_Mode_Conversion_t ADC_ADS1262_Mode_Conversion, ADC_ADS1262_Mode_ReferencePolarityMUX_t ADC_ADS1262_Mode_ReferencePolarityMUX )
+ADC_ADS1262_Status_t ADC_ADS1262_SetInterface( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Interface_CRC_t Interface_CRC, ADC_ADS1262_Interface_Status_t Interface_Status, ADC_ADS1262_Interface_Timeout_t Interface_Timeout )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetMode1( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Mode_BiasMagnitude_t ADC_ADS1262_Mode_BiasMagnitude, ADC_ADS1262_Mode_BiasPolarity_t ADC_ADS1262_Mode_BiasPolarity, ADC_ADS1262_Mode_BiasConnection_t ADC_ADS1262_Mode_BiasConnection, ADC_ADS1262_Mode_Filter_t ADC_ADS1262_Mode_Filter )
+ADC_ADS1262_Status_t ADC_ADS1262_SetMode0( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Mode_ConversionDelay_t Mode_ConversionDelay, ADC_ADS1262_Mode_Chop_t Mode_Chop, ADC_ADS1262_Mode_Conversion_t Mode_Conversion, ADC_ADS1262_Mode_ReferencePolarityMUX_t Mode_ReferencePolarityMUX )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetMode2( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_Mode_DataRate_t ADC_ADS1262_Mode_DataRate, ADC_ADS1262_Mode_Gain_t ADC_ADS1262_Mode_Gain, ADC_ADS1262_Mode_ProgrammableGainAmplifierBypass_t ADC_ADS1262_Mode_ProgrammableGainAmplifierBypass )
+ADC_ADS1262_Status_t ADC_ADS1262_SetMode1( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Mode_BiasMagnitude_t Mode_BiasMagnitude, ADC_ADS1262_Mode_BiasPolarity_t Mode_BiasPolarity, ADC_ADS1262_Mode_BiasConnection_t Mode_BiasConnection, ADC_ADS1262_Mode_Filter_t Mode_Filter )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetInputMUX( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_InputMultiplexer_Negative_t ADC_ADS1262_InputMultiplexer_Negative, ADC_ADS1262_InputMultiplexer_Positive_t ADC_ADS1262_InputMultiplexer_Positive )
+ADC_ADS1262_Status_t ADC_ADS1262_SetMode2( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_Mode_DataRate_t Mode_DataRate, ADC_ADS1262_Mode_Gain_t Mode_Gain, ADC_ADS1262_Mode_ProgrammableGainAmplifierBypass_t Mode_ProgrammableGainAmplifierBypass )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetCalibrationOffset( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_CalibrationOffset_t ADC_ADS1262_CalibrationOffset )
+ADC_ADS1262_Status_t ADC_ADS1262_SetInputMUX( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_InputMultiplexer_Negative_t InputMultiplexer_Negative, ADC_ADS1262_InputMultiplexer_Positive_t InputMultiplexer_Positive )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetCalibrationFullScale( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_CalibrationFullScale_t ADC_ADS1262_CalibrationFullScale )
+ADC_ADS1262_Status_t ADC_ADS1262_SetCalibrationOffset( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_CalibrationOffset_t CalibrationOffset )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetIDAC_MUX( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_IDAC_1_Multiplexer_t ADC_ADS1262_IDAC_1_Multiplexer, ADC_ADS1262_IDAC_2_Multiplexer_t ADC_ADS1262_IDAC_2_Multiplexer )
+ADC_ADS1262_Status_t ADC_ADS1262_SetCalibrationFullScale( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_CalibrationFullScale_t CalibrationFullScale )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetIDAC_Magnitude( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_IDCA_1_Magnitude_t ADC_ADS1262_IDCA_1_Magnitude, ADC_ADS1262_IDCA_2_Magnitude_t ADC_ADS1262_IDCA_2_Magnitude )
+ADC_ADS1262_Status_t ADC_ADS1262_SetIDAC_MUX( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_IDAC_1_Multiplexer_t ADC_ADS1262_IDAC_1_Multiplexer, ADC_ADS1262_IDAC_2_Multiplexer_t IDAC_2_Multiplexer )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetREF_MUX( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ReferenceMultiplexer_Negative_t ADC_ADS1262_ReferenceMultiplexer_Negative, ADC_ADS1262_ReferenceMultiplexer_Positive_t ADC_ADS1262_ReferenceMultiplexer_Positive )
+ADC_ADS1262_Status_t ADC_ADS1262_SetIDAC_Magnitude( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_IDCA_1_Magnitude_t ADC_ADS1262_IDCA_1_Magnitude, ADC_ADS1262_IDCA_2_Magnitude_t IDCA_2_Magnitude )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetTDAC_Positive( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_TDACP_Magnitude_t ADC_ADS1262_TDACP_Magnitude, ADC_ADS1262_TDACP_Output_t ADC_ADS1262_TDACP_Output )
+ADC_ADS1262_Status_t ADC_ADS1262_SetREF_MUX( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ReferenceMultiplexer_Negative_t ReferenceMultiplexer_Negative, ADC_ADS1262_ReferenceMultiplexer_Positive_t ReferenceMultiplexer_Positive )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetTDAC_Negative( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_TDACN_Magnitude_t ADC_ADS1262_TDACN_Magnitude, ADC_ADS1262_TDACN_Output_t ADC_ADS1262_TDACN_Output )
+ADC_ADS1262_Status_t ADC_ADS1262_SetTDAC_Positive( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_TDACP_Magnitude_t TDACP_Magnitude, ADC_ADS1262_TDACP_Output_t TDACP_Output )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetGPIOConnection( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_GPIO_0_Connection_t ADC_ADS1262_GPIO_0_Connection, ADC_ADS1262_GPIO_1_Connection_t ADC_ADS1262_GPIO_1_Connection, ADC_ADS1262_GPIO_2_Connection_t ADC_ADS1262_GPIO_2_Connection, ADC_ADS1262_GPIO_3_Connection_t ADC_ADS1262_GPIO_3_Connection, ADC_ADS1262_GPIO_4_Connection_t ADC_ADS1262_GPIO_4_Connection, ADC_ADS1262_GPIO_5_Connection_t ADC_ADS1262_GPIO_5_Connection, ADC_ADS1262_GPIO_6_Connection_t ADC_ADS1262_GPIO_6_Connection, ADC_ADS1262_GPIO_7_Connection_t ADC_ADS1262_GPIO_7_Connection )
+ADC_ADS1262_Status_t ADC_ADS1262_SetTDAC_Negative( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_TDACN_Magnitude_t TDACN_Magnitude, ADC_ADS1262_TDACN_Output_t TDACN_Output )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetGPIODirection( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_GPIO_0_Direction_t ADC_ADS1262_GPIO_0_Direction, ADC_ADS1262_GPIO_1_Direction_t ADC_ADS1262_GPIO_1_Direction, ADC_ADS1262_GPIO_2_Direction_t ADC_ADS1262_GPIO_2_Direction, ADC_ADS1262_GPIO_3_Direction_t ADC_ADS1262_GPIO_3_Direction, ADC_ADS1262_GPIO_4_Direction_t ADC_ADS1262_GPIO_4_Direction, ADC_ADS1262_GPIO_5_Direction_t ADC_ADS1262_GPIO_5_Direction, ADC_ADS1262_GPIO_6_Direction_t ADC_ADS1262_GPIO_6_Direction, ADC_ADS1262_GPIO_7_Direction_t ADC_ADS1262_GPIO_7_Direction )
+ADC_ADS1262_Status_t ADC_ADS1262_SetGPIOConnection( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_GPIO_0_Connection_t GPIO_0_Connection, ADC_ADS1262_GPIO_1_Connection_t GPIO_1_Connection, ADC_ADS1262_GPIO_2_Connection_t GPIO_2_Connection, ADC_ADS1262_GPIO_3_Connection_t GPIO_3_Connection, ADC_ADS1262_GPIO_4_Connection_t GPIO_4_Connection, ADC_ADS1262_GPIO_5_Connection_t GPIO_5_Connection, ADC_ADS1262_GPIO_6_Connection_t GPIO_6_Connection, ADC_ADS1262_GPIO_7_Connection_t GPIO_7_Connection )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_SetGPIOData( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_GPIO_0_Data_t ADC_ADS1262_GPIO_0_Data, ADC_ADS1262_GPIO_1_Data_t ADC_ADS1262_GPIO_1_Data, ADC_ADS1262_GPIO_2_Data_t ADC_ADS1262_GPIO_2_Data, ADC_ADS1262_GPIO_3_Data_t ADC_ADS1262_GPIO_3_Data, ADC_ADS1262_GPIO_4_Data_t ADC_ADS1262_GPIO_4_Data, ADC_ADS1262_GPIO_5_Data_t ADC_ADS1262_GPIO_5_Data, ADC_ADS1262_GPIO_6_Data_t ADC_ADS1262_GPIO_6_Data, ADC_ADS1262_GPIO_7_Data_t ADC_ADS1262_GPIO_7_Data )
+ADC_ADS1262_Status_t ADC_ADS1262_SetGPIODirection( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_GPIO_0_Direction_t GPIO_0_Direction, ADC_ADS1262_GPIO_1_Direction_t GPIO_1_Direction, ADC_ADS1262_GPIO_2_Direction_t GPIO_2_Direction, ADC_ADS1262_GPIO_3_Direction_t GPIO_3_Direction, ADC_ADS1262_GPIO_4_Direction_t GPIO_4_Direction, ADC_ADS1262_GPIO_5_Direction_t GPIO_5_Direction, ADC_ADS1262_GPIO_6_Direction_t GPIO_6_Direction, ADC_ADS1262_GPIO_7_Direction_t GPIO_7_Direction )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetConfiguration( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ADC_2_Mode_Gain_t ADC_ADS1262_ADC_2_Mode_Gain, ADC_ADS1262_ADC_2_InputReference_t ADC_ADS1262_ADC_2_InputReference, ADC_ADS1262_ADC_2_DataRate_t ADC_ADS1262_ADC_2_DataRate )
+ADC_ADS1262_Status_t ADC_ADS1262_SetGPIOData( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_GPIO_0_Data_t GPIO_0_Data, ADC_ADS1262_GPIO_1_Data_t GPIO_1_Data, ADC_ADS1262_GPIO_2_Data_t GPIO_2_Data, ADC_ADS1262_GPIO_3_Data_t GPIO_3_Data, ADC_ADS1262_GPIO_4_Data_t GPIO_4_Data, ADC_ADS1262_GPIO_5_Data_t GPIO_5_Data, ADC_ADS1262_GPIO_6_Data_t GPIO_6_Data, ADC_ADS1262_GPIO_7_Data_t GPIO_7_Data )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetInputMUX( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ADC_2_InputMultiplexer_Negative_t ADC_ADS1262_ADC_2_InputMultiplexer_Negative, ADC_ADS1262_ADC_2_InputMultiplexer_Positive_t ADC_ADS1262_ADC_2_InputMultiplexer_Positive )
+ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetConfiguration( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ADC_2_Mode_Gain_t ADC_2_Mode_Gain, ADC_ADS1262_ADC_2_InputReference_t ADC_2_InputReference, ADC_ADS1262_ADC_2_DataRate_t ADC_2_DataRate )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationOffset( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ADC_2_CalibrationOffset_t ADC_ADS1262_ADC_2_CalibrationOffset )
+ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetInputMUX( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ADC_2_InputMultiplexer_Negative_t ADC_2_InputMultiplexer_Negative, ADC_ADS1262_ADC_2_InputMultiplexer_Positive_t ADC_2_InputMultiplexer_Positive )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
 }
 
-ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationFullScale( ADC_ADS1262_Instance_t * ADC_ADS1262_Instance, ADC_ADS1262_ADC_2_CalibrationFullScale_t ADC_ADS1262_ADC_2_CalibrationFullScale )
+ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationOffset( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ADC_2_CalibrationOffset_t ADC_2_CalibrationOffset )
 {
-    ADC_ADS1262_Status_t ADC_ADS1262_Status = ADC_ADS1262_Status_Error;
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
 
     do
     {
-        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, ADC_ADS1262_Instance );
-
-        // TODO
-
-        ADC_ADS1262_Status = ADC_ADS1262_Status_NotSupported;
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
     }
     while ( 0 );
 
-    return ADC_ADS1262_Status;
+    return Status;
+}
+
+ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationFullScale( ADC_ADS1262_Instance_t * Instance, ADC_ADS1262_ADC_2_CalibrationFullScale_t ADC_2_CalibrationFullScale )
+{
+    ADC_ADS1262_Status_t Status = ADC_ADS1262_Status_NotSupported;
+
+    do
+    {
+        ADC_Trace( "%s( Instance=%p )", __FUNCTION__, Instance );
+    }
+    while ( 0 );
+
+    return Status;
 }
 
 // #############################################################################
 // #### Public Variable(s) #####################################################
 // #############################################################################
+
+const char ADC_ADS1262_VERSION[] = "0.0.0.v20260202-1914";
 
 // #############################################################################
 // #### File Guard #############################################################
