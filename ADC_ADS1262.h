@@ -92,9 +92,9 @@ extern "C"
     /**
      *  @brief ADC ADS1262 Instance Context
      *
-     *  @struct ADC_ADS1262_Instance_Context_t
+     *  @struct ADC_ADS1262_InstanceContext_t
      */
-    typedef struct ADC_ADS1262_Instance_Context ADC_ADS1262_Instance_Context_t;
+    typedef struct ADC_ADS1262_InstanceContext ADC_ADS1262_InstanceContext_t;
 
     /**
      *  @brief ADC ADS1262 Instance
@@ -111,7 +111,7 @@ extern "C"
         GPIO_t Reset;
 
         // @note Managed Internally
-        ADC_ADS1262_Instance_Context_t * Context;
+        ADC_ADS1262_InstanceContext_t * Context;
     } ADC_ADS1262_Instance_t;
 
     typedef uint8_t ADC_ADS1262_ID_Revision_t;

@@ -532,7 +532,7 @@ typedef union ADC_ADS1262_Byte_CRC
 
 typedef ADC_ADS1262_Byte_CRC_t ADC_ADS1262_Byte_CHK_t;
 
-typedef struct ADC_ADS1262_Instance_Context
+typedef struct ADC_ADS1262_InstanceContext
 {
     ADC_ADS1262_Register_ID_t Register_ID;
     ADC_ADS1262_Register_POWER_t Register_POWER;
@@ -561,7 +561,7 @@ typedef struct ADC_ADS1262_Instance_Context
     ADC_ADS1262_Register_ADC2OFC1_t Register_ADC2OFC1;
     ADC_ADS1262_Register_ADC2FSC0_t Register_ADC2FSC0;
     ADC_ADS1262_Register_ADC2FSC1_t Register_ADC2FSC1;
-} ADC_ADS1262_Instance_Context_t;
+} ADC_ADS1262_InstanceContext_t;
 
 typedef struct ADC_ADS1262_Context
 {
@@ -1060,7 +1060,7 @@ ADC_ADS1262_Status_t ADC_ADS1262_ADC_2_SetCalibrationFullScale( ADC_ADS1262_Inst
 // #### Public Variable(s) #####################################################
 // #############################################################################
 
-const char ADC_ADS1262_VERSION[] = "0.0.0.v20260202-1914";
+const char ADC_ADS1262_VERSION[] = "0.0.0.v20260412-1852";
 
 // #############################################################################
 // #### File Guard #############################################################
